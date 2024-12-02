@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:evaldbtest
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  # just to avoid some db viewer as we can have this one for this simple application
+  h2:
+    console:
+      enabled: false

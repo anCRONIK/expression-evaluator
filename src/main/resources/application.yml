@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: "expression-evaluator"
+  config:
+    import: "classpath:error-messages.properties"
+  datasource:
+    url: jdbc:h2:mem:evaldb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+# just to avoid some db viewer as we can have this one for this simple application
+  h2:
+    console:
+      enabled: true
+      path: /h2-console

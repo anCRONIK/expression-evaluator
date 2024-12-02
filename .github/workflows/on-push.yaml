@@ -1,0 +1,23 @@
+name: Build branch
+
+on:
+  push:
+    branches:
+      - *
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  build:
+    name: Build
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+    with:
+      version-label: build-${{ github.event.pull_request.number }}
+      version-description: ${{ github.event.pull_request.title }}

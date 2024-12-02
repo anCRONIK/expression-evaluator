@@ -1,0 +1,70 @@
+name: Reusable build
+
+on:
+  workflow_call:
+    inputs:
+      skip-unit-tests:
+        description: 'Whether to skip unit tests'
+        type: boolean
+        required: false
+        default: false
+      skip-integration-tests:
+        description: 'Whether to skip integration tests'
+        type: boolean
+        required: false
+        default: false
+      skip-acceptance-tests:
+        description: 'Whether to skip acceptance tests'
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          # Disable shallow cloning to get better Sonar analysis
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Run Gradle's "clean" task
+        run: ./gradlew clean
+
+      - name: Run unit tests
+        if: ${{ !inputs.skip-unit-tests }}
+        run: ./gradlew test
+
+      - name: Run integration tests
+        if: ${{ !inputs.skip-integration-tests }}
+        run: ./gradlew integrationTest
+
+      - name: Run acceptance tests
+        if: ${{ !inputs.skip-acceptance-tests }}
+        run: ./gradlew acceptanceTest
+
+#      not having sonar account so this is commented out
+#      - name: Run Sonar scan
+#        if: ${{ !inputs.skip-unit-tests && !inputs.skip-integration-tests }}
+#        run: ./gradlew jacocoTestReport sonar
+#        env:
+#          # Needed to get information about the pull request
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          # Generated from https://sonarcloud.io/account/security
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Build the application
+        run: ./gradlew assemble
