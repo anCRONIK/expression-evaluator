@@ -54,7 +54,7 @@ jobs:
 
       - name: Run acceptance tests
         if: ${{ !inputs.skip-acceptance-tests }}
-        run: ./gradlew acceptanceTest
+        run: ./gradlew e2eTest
 
 #      not having sonar account so this is commented out
 #      - name: Run Sonar scan

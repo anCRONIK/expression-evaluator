@@ -35,7 +35,7 @@ class GlobalExceptionHandlerTest {
     void handleApplicationException_ValidErrorCode_ShouldReturnBadRequestWithDescription() {
         String errorCode = "APPLICATION_ERROR";
         String expectedDescription = "This is a custom application error";
-        ApplicationError appError = new ApplicationError(errorCode);
+        ApplicationError appError = new ApplicationError(errorCode, "param1");
         given(errorMessages.getMessageDescription(errorCode)).willReturn(expectedDescription);
 
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleApplicationException(appError);
@@ -43,7 +43,7 @@ class GlobalExceptionHandlerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().errorCode()).isEqualTo(errorCode);
-        assertThat(response.getBody().description()).isEqualTo(expectedDescription);
+        assertThat(response.getBody().description()).isEqualTo(expectedDescription+" [param1]");
     }
 
     @Test

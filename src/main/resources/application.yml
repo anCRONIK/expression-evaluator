@@ -1,14 +1,30 @@
+#simplest solution, properties file is better approach
+error:
+  messages:
+    UNKNOWN_ERROR: "An unexpected error occurred"
+    INVALID_REQUEST: "The request is invalid"
+    UNSUPPORTED_OPERATOR: "The expression contains operator that is currently not supported"
+    INVALID_EXPRESSION: "Given expression is not valid. Please check syntax."
+    EXPRESSION_NOT_FOUND: "Expression with given ID is not found."
+    INVALID_ID_FORMAT: "Given ID is not in valid format." #TODO modify this to be used?
+    DATABASE_ERROR: "Could not store item. Please check if the expression with that name is already stored." #TODO this is currently only case that can happen
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,metrics"
+
 spring:
   application:
     name: "expression-evaluator"
-  config:
-    import: "classpath:error-messages.properties"
   datasource:
     url: jdbc:h2:mem:evaldb
     driver-class-name: org.h2.Driver
     username: sa
     password:
-
+  flyway:
+    enabled: true
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -22,3 +38,11 @@ spring:
     console:
       enabled: true
       path: /h2-console
+    datasource:
+      url: jdbc:h2:mem:evaldb
+      driver-class-name: org.h2.Driver
+      username: sa
+      password:
+  web:
+    resources:
+      add-mappings: false

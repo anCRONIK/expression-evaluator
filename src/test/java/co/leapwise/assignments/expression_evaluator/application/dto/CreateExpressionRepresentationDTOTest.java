@@ -11,7 +11,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CreateExpressionDTOTest {
+class CreateExpressionRepresentationDTOTest {
 
     private Validator validator;
 
