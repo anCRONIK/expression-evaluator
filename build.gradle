@@ -93,7 +93,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 }
 
-tasks.register("integrationTest", Test) {
+tasks.register("integrationTest", Test) { //it is also running cucumber tests fixme classpath
     useJUnitPlatform {
         excludeTags "e2eTest"
     }

@@ -3,6 +3,7 @@ package co.leapwise.assignments.expression_evaluator.application.mapper;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -20,6 +21,22 @@ public class JsonFlattener {
             Object value = entry.getValue();
             if (value instanceof Map) {
                 flatten(key, (Map<String, Object>) value, flatMap);
+            } else if (value instanceof List) {
+                flattenList(key, (List<Object>) value, flatMap);
+            } else {
+                flatMap.put(key, value);
+            }
+        }
+    }
+
+    private void flattenList(String prefix, List<Object> list, Map<String, Object> flatMap) {
+        for (int i = 0; i < list.size(); i++) {
+            String key = prefix + "[" + i + "]";
+            Object value = list.get(i);
+            if (value instanceof Map) {
+                flatten(key, (Map<String, Object>) value, flatMap);
+            } else if (value instanceof List) {
+                flattenList(key, (List<Object>) value, flatMap);
             } else {
                 flatMap.put(key, value);
             }

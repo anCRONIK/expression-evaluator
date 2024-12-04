@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static co.leapwise.assignments.expression_evaluator.application.expression.ComparisonUtils.compare;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Component
@@ -44,13 +45,17 @@ public class ExpressionEvaluator {
         Object conditionValue = condition.value();
 
         return switch (condition.operator()) {
-            case EQUALS -> Objects.equals(fieldValue, conditionValue);
-            case NOT_EQUALS -> !Objects.equals(fieldValue, conditionValue);
+            case EQUALS -> compare(fieldValue, conditionValue) == 0;
+            case NOT_EQUALS -> isNull(conditionValue) ? checkIfFieldExists(jsonBody, condition.field()) : compare(fieldValue, conditionValue) != 0;
             case GREATER_THAN -> compare(fieldValue, conditionValue) > 0;
             case LESS_THAN -> compare(fieldValue, conditionValue) < 0;
             case GREATER_THAN_OR_EQUALS -> compare(fieldValue, conditionValue) >= 0;
             case LESS_THAN_OR_EQUALS -> compare(fieldValue, conditionValue) <= 0;
         };
+    }
+
+    private boolean checkIfFieldExists(Map<String, Object> jsonBody, String field) {
+        return jsonBody.keySet().stream().anyMatch(key -> key.equals(field) || key.contains(field+".") || key.contains(field+"["));
     }
 
 }

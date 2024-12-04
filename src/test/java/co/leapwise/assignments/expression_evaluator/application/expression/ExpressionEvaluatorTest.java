@@ -243,6 +243,27 @@ class ExpressionEvaluatorTest {
     }
 
     @Test
+    void evaluate_AssignmentExpressionWithArray_ShouldReturnTrue() {
+        Expression expression = new Expression(1L, UUID.randomUUID(), "1",
+                                               "(customer.firstName == 'JOHN' && customer.salary > 100) || (customer" +
+                                                       ".address != null && customer.address[0].city == 'CHICAGO')");
+        Map<String, Object> jsonBody = Map.of(
+                "customer.firstName", "JOHN",
+                "customer.lastName", "DOE",
+                "customer.address[0].city", "Chicago",
+                "customer.address[0].zipCode", 1234,
+                "customer.address[0].street", "56th",
+                "customer.address[0].houseNumber", 2345,
+                "customer.salary", 99,
+                "customer.type", "BUSINESS"
+        );
+
+        boolean result = evaluator.evaluate(expression, jsonBody);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
     void evaluate_NestedExpression_ShouldReturnTrue() {
         Expression expression = new Expression(1L, UUID.randomUUID(), "1",
                                                "(customer.age >= 30 AND (customer.salary > 50000 OR customer" +

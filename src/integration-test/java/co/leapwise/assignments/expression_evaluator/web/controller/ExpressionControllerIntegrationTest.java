@@ -191,6 +191,50 @@ public class ExpressionControllerIntegrationTest extends BaseIntegrationTest {
                .andExpect(jsonPath("$.result").value(true));
     }
 
+    @Test
+    void createAndEvaluateExpression_ValidRequestWithContainingArray_FullWorkflow() throws Exception {
+        String createRequestJson = """
+            {
+              "name": "Complex expression with array",
+              "expression": "(customer.firstName == \\"JOHN\\" && customer.salary < 100) || (customer.address != null && customer.address[0].city == 'Washington')"
+            }""";
+
+        String evaluateRequestJson = """
+            {
+              "customer": {
+                "firstName": "JOHN",
+                "lastName": "DOE",
+                "address": [
+                  {
+                    "city": "Washington",
+                    "zipCode": 1234,
+                    "street": "56th",
+                    "houseNumber": 2345
+                  }
+                ],
+                "salary": 199,
+                "type": "BUSINESS"
+              }
+            }""";
+
+        String expressionId = mockMvc.perform(post("/expression")
+                                                      .contentType(MediaType.APPLICATION_JSON)
+                                                      .content(createRequestJson))
+                                     .andExpect(status().isCreated())
+                                     .andExpect(jsonPath("$.expressionId").exists())
+                                     .andReturn()
+                                     .getResponse()
+                                     .getContentAsString();
+
+        expressionId = expressionId.substring(expressionId.indexOf(":") + 2, expressionId.length() - 2);
+
+        mockMvc.perform(post("/expression/" + expressionId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(evaluateRequestJson))
+               .andExpect(status().isOk())
+               .andExpect(jsonPath("$.result").value(true));
+    }
+
     //TODO tests for too big expression for storing in database
 
     //should be written with cucumber as acceptance test, this way is too flaky, just an example what should be also

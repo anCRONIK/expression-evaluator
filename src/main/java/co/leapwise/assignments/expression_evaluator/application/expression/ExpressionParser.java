@@ -23,7 +23,7 @@ public class ExpressionParser {
 //            "([a-zA-Z_][a-zA-Z0-9_]*\\.?[a-zA-Z0-9_.]*)\\s*?(>=|<=|==|!=|>|<)\\s*?((\\d+[.,]?\\d*)|'.*?'|\"
 //            .*?\"|true|false|null)";
     private static final String CONDITION_PATTERN =
-            "([a-zA-Z_][a-zA-Z0-9_]*\\.?[a-zA-Z0-9_.]*)\\s*?(>=|<=|==|!=|>|<)\\s*?(.*)";
+            "([a-zA-Z][a-zA-Z0-9.\\[\\]]*)\\s*?(>=|<=|==|!=|>|<)\\s*?(.*)";
 
     @Cacheable(cacheNames = "expressions", key = "#identifier")
     public ExpressionRepresentation parse(String identifier, String expression) {

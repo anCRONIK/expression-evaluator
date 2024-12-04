@@ -18,19 +18,23 @@ public class ComparisonUtils {
             return 1;
         } else if (isNull(conditionValue) && nonNull(fieldValue)) {
             return -1;
-        } else if (isNull(fieldValue) && isNull(conditionValue)) {
+        } else if (isNull(fieldValue)) {
             return 0;
         }
 
-        if (fieldValue instanceof Double && conditionValue instanceof Double) {
-            return compareDoubles((Double) fieldValue, (Double) conditionValue);
-        }
+        return switch (fieldValue) {
+            case String s when conditionValue instanceof String -> compareStrings(s, (String) conditionValue);
+            case Double v when conditionValue instanceof Double -> compareDoubles(v, (Double) conditionValue);
+            case Comparable comparable when conditionValue instanceof Comparable ->
+                    ((Comparable<Object>) fieldValue).compareTo(conditionValue);
+            default -> throw new ApplicationError(INVALID_EXPRESSION,
+                                                  "Values are not comparable: " + fieldValue + ", " + conditionValue);
+        };
 
-        if (fieldValue instanceof Comparable && conditionValue instanceof Comparable) {
-            return ((Comparable<Object>) fieldValue).compareTo(conditionValue);
-        }
+    }
 
-        throw new ApplicationError(INVALID_EXPRESSION, "Values are not comparable: " + fieldValue + ", " + conditionValue);
+    private static int compareStrings(String fieldValue, String conditionValue) {
+        return fieldValue.compareToIgnoreCase(conditionValue);
     }
 
     private static int compareDoubles(Double fieldValue, Double conditionValue) {

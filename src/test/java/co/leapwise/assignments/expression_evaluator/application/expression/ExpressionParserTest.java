@@ -19,6 +19,14 @@ class ExpressionParserTest {
     }
 
     @Test
+    void parse_InvalidExpression_ShouldThrowException() {
+        String expression = "customer.salary >= 100 & customer.firstName == \"John\"";
+        assertThatThrownBy(() -> parser.parseInternal(expression))
+                .isInstanceOf(ApplicationError.class)
+                .hasMessageContaining("INVALID_EXPRESSION");
+    }
+
+    @Test
     void parse_SimpleCondition_BooleanTrue_ShouldParseCorrectly() {
         String expression = "customer.active == true";
         ExpressionRepresentation representation = parser.parseInternal(expression);
@@ -169,6 +177,21 @@ class ExpressionParserTest {
     }
 
     @Test
+    void parse_SimpleAndExpressionForValuesInArray_ShouldParseCorrectly() {
+        String expression = "customer[0].salary >= 100 AND customer[0].firstName == \"John\"";
+        ExpressionRepresentation representation = parser.parseInternal(expression);
+
+        assertThat(representation.operator()).isEqualTo(LogicalOperator.AND);
+        assertThat(representation.left().condition().field()).isEqualTo("customer[0].salary");
+        assertThat(representation.left().condition().operator().getSymbol()).isEqualTo(">=");
+        assertThat(representation.left().condition().value()).isEqualTo(100);
+
+        assertThat(representation.right().condition().field()).isEqualTo("customer[0].firstName");
+        assertThat(representation.right().condition().operator().getSymbol()).isEqualTo("==");
+        assertThat(representation.right().condition().value()).isEqualTo("John");
+    }
+
+    @Test
     void parse_ComplexExpression_ShouldParseCorrectly() {
         String expression = "(customer.firstName == \"JOHN\" && customer.salary < 100) OR (customer.address != null && customer.address.city == \"Washington\")";
         ExpressionRepresentation representation = parser.parseInternal(expression);
@@ -194,14 +217,6 @@ class ExpressionParserTest {
         assertThat(right.right().condition().field()).isEqualTo("customer.address.city");
         assertThat(right.right().condition().operator().getSymbol()).isEqualTo("==");
         assertThat(right.right().condition().value()).isEqualTo("Washington");
-    }
-
-    @Test
-    void parse_InvalidExpression_ShouldThrowException() {
-        String expression = "customer.salary >= 100 & customer.firstName == \"John\"";
-        assertThatThrownBy(() -> parser.parseInternal(expression))
-                .isInstanceOf(ApplicationError.class)
-                .hasMessageContaining("INVALID_EXPRESSION");
     }
 
     @Test

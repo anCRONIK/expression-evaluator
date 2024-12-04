@@ -3,6 +3,7 @@ package co.leapwise.assignments.expression_evaluator.application.mapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,5 +71,18 @@ public class JsonFlattenerTest {
         assertThat(flatMap).containsEntry("customer.salary", 100);
         assertThat(flatMap).containsEntry("customer.address.city", "Washington");
         assertThat(flatMap).containsEntry("customer.address.zipCode", 12345);
+    }
+
+    @Test
+    public void flatten_ListValue() {
+        Map<String, Object> mapWithList = new HashMap<>();
+        mapWithList.put("items", List.of("apple", "banana", "cherry"));
+
+        JsonFlattener flattener = new JsonFlattener();
+        Map<String, Object> flatMap = flattener.flatten(mapWithList);
+
+        assertThat(flatMap).containsEntry("items[0]", "apple");
+        assertThat(flatMap).containsEntry("items[1]", "banana");
+        assertThat(flatMap).containsEntry("items[2]", "cherry");
     }
 }
